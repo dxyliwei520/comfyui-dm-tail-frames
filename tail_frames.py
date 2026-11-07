@@ -51,4 +51,4 @@ class DMTailFrames:
 
 
 NODE_CLASS_MAPPINGS = {NODE_NAME: DMTailFrames}
-NODE_DISPLAY_NAME_MAPPINGS = {NODE_NAME: "Tail Frames (last N) · 取尾帧"}
+NODE_DISPLAY_NAME_MAPPINGS = {NODE_NAME: "DM Tail Frames (last N) · 取尾帧"}

@@ -1,4 +1,18 @@
+<div align="center">
+
 # comfyui-dm-tail-frames
+
+**Take the last N frames of an IMAGE batch — by DM 造梦空间**
+
+[![ComfyUI](https://img.shields.io/badge/ComfyUI-custom%20node-4B8BBE)](https://github.com/comfyanonymous/ComfyUI)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Made by DM](https://img.shields.io/badge/made%20by-DM%20%E9%80%A0%E6%A2%A6%E7%A9%BA%E9%97%B4-10b981)](https://www.520xai.com)
+
+🌐 [DM 造梦空间 · 520xai.com](https://www.520xai.com) &nbsp;|&nbsp; [dmllm.cn](https://dmllm.cn)
+
+</div>
+
+---
 
 ComfyUI custom nodes for **taking the last N frames of an IMAGE batch** — built for multi-modal
 video segment stitching (e.g. 20 s per segment, feed the last 3 frames into the next segment).
