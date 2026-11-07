@@ -1,0 +1,10 @@
+{
+    "author": "dxyliwei520",
+    "title": "ComfyUI DM Tail Frames",
+    "reference": "https://github.com/dxyliwei520/comfyui-dm-tail-frames",
+    "files": [
+        "https://github.com/dxyliwei520/comfyui-dm-tail-frames"
+    ],
+    "install_type": "git-clone",
+    "description": "Take the last N frames of an IMAGE batch regardless of total frames (handy for multi-modal video segment stitching) plus a compat shim that re-registers the lost MySplitImageBatch node."
+}

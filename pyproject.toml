@@ -1,0 +1,19 @@
+[project]
+name = "dm-tail-frames"
+version = "1.0.3"
+description = "Take the last N frames of an IMAGE batch (video segment stitching) + compat shim for the lost MySplitImageBatch node."
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["comfyui", "video", "frames", "batch", "tail", "stitching"]
+
+[project.urls]
+Repository = "https://github.com/dxyliwei520/comfyui-dm-tail-frames"
+Homepage = "https://www.520xai.com"
+
+[tool.comfy]
+PublisherId = "dxyliwei520"
+DisplayName = "DM Tail Frames"
+Icon = ""
+requires-comfyui = ">=0.3.0"
