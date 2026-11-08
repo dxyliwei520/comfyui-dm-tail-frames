@@ -1,6 +1,8 @@
-"""DMTailFrames —— 取一批图像的最后 N 帧（默认 3）。
+"""DMTailFrames — take the last N frames of an IMAGE batch (default: 3).
 
-不管总帧数是多少，永远取最后 N 帧；帧数不足时按实际数量返回。
+Always returns the trailing N frames regardless of the total frame count.
+If the batch has fewer than N frames, the actual count is returned (unless
+``pad`` is enabled, in which case the last frame is repeated to fill).
 """
 
 import torch
@@ -9,7 +11,7 @@ NODE_NAME = "DMTailFrames"
 
 
 class DMTailFrames:
-    """取 IMAGE 批的最后 N 帧"""
+    """Take the last N frames of an IMAGE batch."""
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -17,11 +19,11 @@ class DMTailFrames:
             "required": {
                 "images": ("IMAGE",),
                 "count": ("INT", {"default": 3, "min": 1, "max": 240, "step": 1,
-                                  "tooltip": "取最后几帧；默认 3"}),
+                                  "tooltip": "Number of trailing frames to take. Default: 3"}),
             },
             "optional": {
                 "pad": ("BOOLEAN", {"default": False,
-                                    "tooltip": "帧数不足 N 时，是否用最后一帧补齐"}),
+                                    "tooltip": "Pad with the last frame when the batch has fewer than N frames"}),
             },
         }
 
@@ -29,7 +31,8 @@ class DMTailFrames:
     RETURN_NAMES = ("images",)
     FUNCTION = "run"
     CATEGORY = "DM/Frames"
-    DESCRIPTION = "取一批图像的最后 N 帧（默认 3）。与总帧数无关，取不到的按实际数量返回。"
+    DESCRIPTION = ("Take the last N frames of an image batch (default: 3). "
+                   "Independent of the total frame count; returns fewer frames if not enough are available.")
 
     def run(self, images, count=3, pad=False):
         if images is None:
@@ -51,4 +54,4 @@ class DMTailFrames:
 
 
 NODE_CLASS_MAPPINGS = {NODE_NAME: DMTailFrames}
-NODE_DISPLAY_NAME_MAPPINGS = {NODE_NAME: "DM Tail Frames (last N) · 取尾帧"}
+NODE_DISPLAY_NAME_MAPPINGS = {NODE_NAME: "DM Tail Frames (last N)"}

@@ -1,17 +1,21 @@
-"""兼容层：把已丢失的 `MySplitImageBatch` 重新注册出来。
+"""Compatibility shim that re-registers the lost ``MySplitImageBatch`` node.
 
-背景（2026-11-07）：
-    用户的工作流 `MiniMax多模态.json` 里有 5 个 `MySplitImageBatch` 节点，
-    但原自定义节点包已经不在了（custom_nodes 里搜不到）→ 画布上全是红叉 + UNKNOWN。
+Background (2026-11-07):
+    A user workflow ("MiniMax multimodal.json") contained 5 ``MySplitImageBatch``
+    nodes, but the original custom-node package is gone (not present in
+    ``custom_nodes``) — the canvas showed red boxes and UNKNOWN for each of them.
 
-做法：
-    注册一个同名 `MySplitImageBatch`：
-      - 输入：images + 3 个 INT（保持原 3 个控件位，避免连线/布局错乱）
-      - 输出：IMAGES + frame_count（与原节点一致，2 个输出）
-    语义按"取尾部 N 帧"实现：N = 第二个控件；
-      - 若第一个控件 >= 0 且小于总帧数 → 从该位置开始取 N 帧（更像原节点的 start/count/step）
-      - 否则 → 直接取最后 N 帧
-    这样老工作流不用改连线就能跑，需要精确语义时在画布上调参数即可。
+Approach:
+    Register a node with the same ``MySplitImageBatch`` name:
+      - inputs: images + 3 INT widgets (kept for layout/wiring compatibility)
+      - outputs: IMAGES + frame_count (same as the original node: 2 outputs)
+    Semantics follow "take the trailing N frames": N = the second widget;
+      - if the first widget is >= 0 and smaller than the total frame count,
+        take N frames starting at that position (closer to the original
+        start/count/step behaviour)
+      - otherwise, take the last N frames
+    Existing workflows therefore keep working without re-wiring; tweak the
+    widgets on the canvas when exact semantics are needed.
 """
 
 import torch
@@ -20,7 +24,7 @@ NODE_NAME = "MySplitImageBatch"
 
 
 class MySplitImageBatchCompat:
-    """兼容旧工作流：取一段 / 取尾部的帧"""
+    """Compatibility node: take a slice of frames or the trailing frames."""
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -28,11 +32,11 @@ class MySplitImageBatchCompat:
             "required": {
                 "images": ("IMAGE",),
                 "start_or_zero": ("INT", {"default": 0, "min": -100000, "max": 100000, "step": 1,
-                                          "tooltip": "起始帧；<=0 或越界时按“取最后 count 帧”处理"}),
+                                          "tooltip": "Start frame. If <= 0 or out of range, the last `count` frames are taken"}),
                 "count": ("INT", {"default": 3, "min": 1, "max": 4096, "step": 1,
-                                  "tooltip": "取多少帧；默认 3"}),
+                                  "tooltip": "Number of frames to take. Default: 3"}),
                 "step": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1,
-                                 "tooltip": "步长；1 = 连续帧"}),
+                                 "tooltip": "Frame step. 1 = consecutive frames"}),
             },
         }
 
@@ -40,7 +44,8 @@ class MySplitImageBatchCompat:
     RETURN_NAMES = ("IMAGES", "frame_count")
     FUNCTION = "run"
     CATEGORY = "DM/Frames"
-    DESCRIPTION = "兼容旧工作流的 MySplitImageBatch：按 start/count/step 切帧；start<=0 时取最后 count 帧。"
+    DESCRIPTION = ("MySplitImageBatch compatibility for legacy workflows: "
+                   "slice frames by start/count/step; when start <= 0 the last `count` frames are returned.")
 
     def run(self, images, start_or_zero=0, count=3, step=1):
         if images is None:
@@ -55,7 +60,7 @@ class MySplitImageBatchCompat:
             return (images, 0)
 
         if start <= 0 or start >= n:
-            # 取最后 count 帧（最常用的语义）
+            # Take the last `count` frames (the most common use case).
             lo = max(0, n - count)
             out = images[lo:]
         else:
@@ -68,4 +73,4 @@ class MySplitImageBatchCompat:
 
 
 NODE_CLASS_MAPPINGS = {NODE_NAME: MySplitImageBatchCompat}
-NODE_DISPLAY_NAME_MAPPINGS = {NODE_NAME: "MySplitImageBatch (compat) · 兼容旧节点"}
+NODE_DISPLAY_NAME_MAPPINGS = {NODE_NAME: "MySplitImageBatch (compat)"}
